@@ -1,0 +1,19 @@
+/* Estilos globales de la aplicación */
+.app-container {
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* Reset global */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Georgia', serif;
+  overflow-x: hidden;
+}

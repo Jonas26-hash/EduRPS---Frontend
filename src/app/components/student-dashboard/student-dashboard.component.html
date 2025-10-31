@@ -1,0 +1,71 @@
+<div class="student-dashboard">
+  <!-- Header Bar -->
+  <div class="header-bar">
+    <div class="logo-wrapper">
+      <img src="assets/Img/logo.plat.png" alt="Logo Plataforma" 
+            id="animated-logo" #animatedLogo>
+      <canvas id="logo-bursts" #logoBursts></canvas>
+    </div>
+  </div>
+
+  <!-- Menu Button -->
+  <button class="menu-button" 
+          [class.active]="isMenuVisible"
+          (click)="toggleMenu()" 
+          aria-label="Menu" 
+          title="Perfil">
+    <i class="fas" [class.fa-user]="!isMenuVisible" [class.fa-times]="isMenuVisible"></i>
+  </button>
+
+  <div class="container">
+    <!-- Left Panel - Main Content -->
+    <div class="left-panel">
+      <div class="icons-container">
+        <div class="icon-box" 
+             *ngFor="let option of menuOptions"
+            (click)="navigateToOption(option.route)">
+          <img [src]="option.icon" [alt]="option.title">
+          <span [innerHTML]="option.title"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel - Profile -->
+    <div class="right-panel" [class.oculto]="!isMenuVisible">
+      <!-- Logo and text top left inside right panel -->
+      <div class="logo-container">
+        <img alt="Institution logo" src="assets/Img/logoRPS.png"/>
+        <div class="logo-text">
+          <p>Institución Educativa Pública</p>
+          <p>Ricardo Palma Soriano</p>
+        </div>
+      </div>
+
+      <!-- Profile circle -->
+      <div class="profile-circle">
+      <div class="profile-initial">
+          {{ studentInfo.name.charAt(0) }}
+        </div>
+      </div>
+
+      <!-- Name and role -->
+      <div class="profile-info">
+        <p>{{ studentInfo.role }}</p>
+        <p>
+          {{ studentInfo.name }}<br/>
+          {{ studentInfo.grade }}
+        </p>
+      </div>
+
+      <!-- Buttons and links -->
+      <div class="action-buttons">
+        <button class="logout-button" (click)="logout()">
+          CERRAR SESION
+        </button>
+        <a class="change-password" (click)="changePassword()">
+          Cambiar contraseña
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

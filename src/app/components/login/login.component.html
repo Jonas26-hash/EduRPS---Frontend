@@ -1,0 +1,86 @@
+<!-- components/login/login.component.html (ACTUALIZADO) -->
+<div class="login-container">
+  <div class="login-form">
+    <img src="assets/Img/logo.plat.png" alt="EduRPS Logo" class="login-logo">
+    <h2>Iniciar Sesión - EduRPS</h2>
+    
+    <!-- Selector de tipo de usuario prominente -->
+    <div class="user-type-selector">
+      <div class="user-type-option" 
+           [class.active]="userType === 'teacher'"
+           (click)="userType = 'teacher'; onUserTypeChange()">
+        <i class="fas fa-chalkboard-teacher"></i>
+        <span>Docente</span>
+      </div>
+      <div class="user-type-option" 
+           [class.active]="userType === 'student'"
+           (click)="userType = 'student'; onUserTypeChange()">
+        <i class="fas fa-user-graduate"></i>
+        <span>Estudiante</span>
+      </div>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      <div class="form-group">
+        <label for="email">
+          <i class="fas fa-envelope"></i>
+          Email:
+        </label>
+        <input type="email" 
+               id="email" 
+               [(ngModel)]="email" 
+               name="email"
+               required
+               [placeholder]="userType === 'teacher' ? 'docente@edurps.edu.pe' : 'estudiante@edurps.edu.pe'"
+               [disabled]="isLoading">
+      </div>
+      
+      <div class="form-group">
+        <label for="password">
+          <i class="fas fa-lock"></i>
+          Contraseña:
+        </label>
+        <input type="password" 
+               id="password" 
+               [(ngModel)]="password" 
+               name="password"
+               required
+               placeholder="Ingresa tu contraseña"
+               [disabled]="isLoading">
+      </div>
+
+      <!-- Mostrar errores -->
+      <div class="error-message" *ngIf="errorMessage">
+        <i class="fas fa-exclamation-circle"></i>
+        {{ errorMessage }}
+      </div>
+      
+      <button type="submit" 
+              class="login-btn" 
+              [class.teacher]="userType === 'teacher'"
+              [class.student]="userType === 'student'"
+              [disabled]="isLoading || !loginForm.valid">
+        <span *ngIf="!isLoading">
+          <i class="fas fa-sign-in-alt"></i>
+          Iniciar Sesión como {{ userType === 'teacher' ? 'Docente' : 'Estudiante' }}
+        </span>
+        <span *ngIf="isLoading">
+          <i class="fas fa-spinner fa-spin"></i>
+          Iniciando sesión...
+        </span>
+      </button>
+    </form>
+
+    <!-- Botón de demostración -->
+    <div class="demo-section">
+      <p class="demo-text">¿Quieres probar? Usa datos de demostración:</p>
+      <button type="button" 
+              class="demo-btn" 
+              (click)="fillDemoData()"
+              [disabled]="isLoading">
+        <i class="fas fa-magic"></i>
+        Llenar datos de {{ userType === 'teacher' ? 'docente' : 'estudiante' }}
+      </button>
+    </div>
+  </div>
+</div>
