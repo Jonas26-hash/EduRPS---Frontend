@@ -1,0 +1,139 @@
+<!-- ======= LOADING ======= -->
+<section class="loading" *ngIf="isLoading" aria-live="polite">
+  <div class="spinner"></div>
+  <p class="muted">Cargando curso…</p>
+</section>
+
+<!-- ======= ERROR ======= -->
+<section class="error-card" *ngIf="!isLoading && errorMsg">
+  <i class="fa fa-triangle-exclamation"></i>
+  <div>
+    <h4>No pudimos cargar el curso.</h4>
+    <small class="muted">{{ errorMsg }}</small>
+  </div>
+  <button class="btn-primary" (click)="retry()">Reintentar</button>
+</section>
+
+<!-- ======= CONTENIDO ======= -->
+<div class="course-page" *ngIf="!isLoading && header">
+
+  <!-- Banner -->
+  <header
+    class="banner"
+    [style.backgroundImage]="'url(' + (header?.coverUrl || '/assets/Img/course-ph.jpg') + ')'">
+
+    <button class="ghost back" aria-label="Volver" (click)="back()">
+      <i class="fa fa-arrow-left"></i>
+    </button>
+
+    <div class="banner-meta">
+      <h1 class="title">{{ header?.titulo }}</h1>
+      <div class="chips">
+        <span class="chip" *ngIf="header?.grado">{{ header?.grado }}</span>
+        <span class="chip" *ngIf="header?.anio">{{ header?.anio }}</span>
+      </div>
+    </div>
+
+    <nav class="tabs">
+      <button [class.active]="tab==='unidades'" (click)="changeTab('unidades')">
+        Unidades
+      </button>
+      <!-- pestaña compañeros solo para estudiante -->
+      <button *ngIf="mode==='student'"
+              [class.active]="tab==='companeros'"
+              (click)="changeTab('companeros')">
+        Compañeros
+      </button>
+    </nav>
+  </header>
+
+  <!-- Layout principal -->
+  <div class="layout">
+
+    <!-- Rail izquierda: Unidades / Sesiones / Tareas -->
+    <aside class="rail" *ngIf="tab==='unidades'">
+      <!-- Lista de unidades -->
+      <div class="unidad-list">
+        <button class="unidad-item"
+                *ngFor="let u of unidades"
+                [class.active]="u.idUnidad === unidadSel?.idUnidad"
+                (click)="selectUnidad(u)">
+          <span class="chip">{{ u.numero }}</span>
+          <strong class="truncate">{{ u.nombre }}</strong>
+          <i class="fa fa-ellipsis-vertical"></i>
+        </button>
+      </div>
+
+      <!-- Subtabs -->
+      <div class="subtabs">
+        <button [class.active]="subtab==='sesiones'"
+                (click)="changeSubtab('sesiones')">Sesiones</button>
+        <button [class.active]="subtab==='tareas'"
+                (click)="changeSubtab('tareas')">Tareas</button>
+      </div>
+
+      <!-- Sesiones -->
+      <div class="cards" *ngIf="subtab==='sesiones'">
+        <article class="card"
+                 *ngFor="let s of sesiones"
+                 (click)="openSesion(s)" tabindex="0">
+          <header>
+            <strong>Sesión {{ s.numero }}</strong>
+            <small *ngIf="s.duracionMin">{{ s.duracionMin }} min</small>
+          </header>
+          <p class="line-2">{{ s.titulo }}</p>
+          <footer>
+            <small *ngIf="s.fecha as f">{{ f | date:"EEE d 'de' MMM" }}</small>
+          </footer>
+        </article>
+
+        <p class="empty" *ngIf="sesiones?.length === 0">
+          No hay sesiones registradas.
+        </p>
+      </div>
+
+      <!-- Tareas -->
+      <div class="cards" *ngIf="subtab==='tareas'">
+        <article class="card" *ngFor="let t of tareas">
+          <header>
+            <strong class="line-1">{{ t.titulo }}</strong>
+            <small *ngIf="t.fechaEntrega">Entrega: {{ t.fechaEntrega | date:"d 'de' MMM" }}</small>
+          </header>
+          <footer>
+            <span class="pill" [class.warn]="t.estado==='pendiente'">
+              {{ t.estado || '—' }}
+            </span>
+          </footer>
+        </article>
+
+        <p class="empty" *ngIf="tareas?.length === 0">
+          Aún no hay tareas en esta sesión.
+        </p>
+      </div>
+    </aside>
+
+    <!-- Rail compañeros (solo estudiantes) -->
+    <aside class="rail" *ngIf="tab==='companeros' && mode==='student'">
+      <div class="mates">
+        <div class="mate" *ngFor="let a of companeros">
+          <img *ngIf="a.avatarUrl; else init" [src]="a.avatarUrl" alt="Avatar" />
+          <ng-template #init>
+            <div class="avatar">
+              {{ (a.nombre?.[0] || 'A') + (a.apellido?.[0] || '') }}
+            </div>
+          </ng-template>
+          <span class="line-1">{{ a.nombre }} {{ a.apellido }}</span>
+        </div>
+
+        <p class="empty" *ngIf="companeros?.length === 0">
+          No hay estudiantes matriculados.
+        </p>
+      </div>
+    </aside>
+
+    <!-- Stage con marca de agua -->
+    <section class="stage">
+      <img src="/assets/Img/insignia.png" alt="" class="watermark" />
+    </section>
+  </div>
+</div>

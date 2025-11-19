@@ -1,0 +1,48 @@
+<div class="bg-white rounded-2xl shadow-lg p-8">
+
+  <h2 class="text-2xl font-bold mb-6">Buscar Estudiante</h2>
+
+  <div class="flex gap-3 mb-6">
+    <input
+      type="text"
+      maxlength="8"
+      [(ngModel)]="dni"
+      placeholder="Ingrese DNI"
+      class="border rounded-lg p-3 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+
+    <button
+      (click)="buscar()"
+      class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+      Buscar
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="text-gray-600 mb-4">
+    Buscando estudiante...
+  </div>
+
+  <!-- Estudiante encontrado -->
+  <div *ngIf="usuarioEncontrado" class="bg-green-50 border p-5 rounded-xl mb-6">
+    <p class="font-semibold text-lg text-green-800">Estudiante encontrado</p>
+    <p><strong>Nombre:</strong> {{ usuarioEncontrado.nombre }} {{ usuarioEncontrado.apellido }}</p>
+    <p><strong>DNI:</strong> {{ usuarioEncontrado.dni }}</p>
+    <p><strong>Correo:</strong> {{ usuarioEncontrado.correo }}</p>
+  </div>
+
+  <!-- No existe -->
+  <div *ngIf="noExiste" class="bg-red-50 border p-5 rounded-xl mb-6">
+    <p class="font-semibold text-lg text-red-800">No se encontró el estudiante.</p>
+    <p>Se registrará como nuevo alumno.</p>
+  </div>
+
+  <div class="flex justify-end">
+    <button
+      (click)="siguiente()"
+      [disabled]="dni.length !== 8"
+      class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400">
+      Continuar
+    </button>
+  </div>
+
+</div>

@@ -1,7 +1,11 @@
-// services/student.service.ts
+// src/app/services/student.service.ts
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
+// ========== INTERFACES EXISTENTES ==========
 export interface MenuItem {
   title: string;
   icon: string;
@@ -40,14 +44,144 @@ export interface ClassSchedule {
   friday?: string;
 }
 
+// ========== NUEVAS INTERFACES PARA API ==========
+export interface Estudiante {
+  idEstudiante?: number;
+  usuario: {
+    idUsuario?: number;
+    nombre: string;
+    apellido: string;
+    email: string;
+    telefono?: string;
+    fechaNacimiento: string;
+    rol?: string;
+  };
+  dni: string;
+  codigoMatricula: string;
+  grado?: {
+    idGrado: number;
+    nombre: string;
+  };
+  seccion?: {
+    idSeccion: number;
+    nombre: string;
+  };
+}
+
+export interface EstudianteRequest {
+  usuario: {
+    nombre: string;
+    apellido: string;
+    email: string;
+    telefono?: string;
+    fechaNacimiento: string;
+    password: string;
+    rol: string;
+  };
+  dni: string;
+  codigoMatricula: string;
+  idGrado?: number;
+  idSeccion?: number;
+}
+
+export interface EstudianteSearch {
+  idEstudiante: number;
+  nombreCompleto: string;
+  dni: string;
+  codigoMatricula: string;
+  grado?: string;
+  seccion?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class StudentService {
+  private apiUrl = `${environment.apiUrl}/api/estudiantes`;
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
-  // Opciones del menú principal para estudiantes
+  // ========== MÉTODOS DE API REALES ==========
+  
+  /**
+   * Obtener todos los estudiantes
+   */
+  getAll(): Observable<any> {
+    return this.http.get(`${this.apiUrl}`);
+  }
+
+  /**
+   * Obtener estudiante por ID
+   */
+  getById(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${id}`);
+  }
+
+  /**
+   * Crear nuevo estudiante
+   */
+  create(estudiante: EstudianteRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}`, estudiante);
+  }
+
+  /**
+   * Actualizar estudiante
+   */
+  update(id: number, estudiante: Partial<EstudianteRequest>): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, estudiante);
+  }
+
+  /**
+   * Eliminar estudiante
+   */
+  delete(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  /**
+   * Buscar estudiantes (para autocomplete)
+   */
+  search(query: string): Observable<EstudianteSearch[]> {
+    return this.http.get<any>(`${this.apiUrl}`, {
+      params: new HttpParams().set('search', query)
+    }).pipe(
+      map(response => {
+        if (response.content) {
+          return response.content.map((est: any) => ({
+            idEstudiante: est.idEstudiante,
+            nombreCompleto: `${est.usuario.nombre} ${est.usuario.apellido}`,
+            dni: est.dni,
+            codigoMatricula: est.codigoMatricula,
+            grado: est.grado?.nombre,
+            seccion: est.seccion?.nombre
+          }));
+        }
+        return [];
+      })
+    );
+  }
+
+  /**
+   * Buscar por DNI
+   */
+  getByDni(dni: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/dni/${dni}`);
+  }
+
+  /**
+   * Verificar si el estudiante ya está matriculado en el año
+   */
+  verificarMatricula(idEstudiante: number, anio: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${idEstudiante}/verificar-matricula`, {
+      params: new HttpParams().set('anio', anio.toString())
+    });
+  }
+
+  // ========== MÉTODOS MOCK EXISTENTES (Mantener para compatibilidad) ==========
+  
+  /**
+   * Opciones del menú principal para estudiantes
+   */
   getStudentMenuItems(): Observable<MenuItem[]> {
     const menuItems: MenuItem[] = [
       {
@@ -75,7 +209,9 @@ export class StudentService {
     return of(menuItems);
   }
 
-  // Perfil del estudiante
+  /**
+   * Perfil del estudiante
+   */
   getStudentProfile(): Observable<any> {
     return of({
       name: 'Ana María García López',
@@ -89,7 +225,9 @@ export class StudentService {
     });
   }
 
-  // Notas del estudiante por períodos
+  /**
+   * Notas del estudiante por períodos
+   */
   getStudentGrades(): Observable<StudentGrade[]> {
     const grades: StudentGrade[] = [
       // 1er Bimestre
@@ -114,7 +252,9 @@ export class StudentService {
     return of(grades);
   }
 
-  // Asistencia del estudiante
+  /**
+   * Asistencia del estudiante
+   */
   getStudentAttendance(): Observable<Attendance[]> {
     const attendance: Attendance[] = [
       { date: '2024-03-01', status: 'present', subject: 'Matemáticas' },
@@ -132,7 +272,9 @@ export class StudentService {
     return of(attendance);
   }
 
-  // Estadísticas del estudiante
+  /**
+   * Estadísticas del estudiante
+   */
   getStudentStats(): Observable<any> {
     return of({
       currentAverage: 16.7,
@@ -148,7 +290,9 @@ export class StudentService {
     });
   }
 
-  // Tareas pendientes y completadas
+  /**
+   * Tareas pendientes y completadas
+   */
   getAllHomework(): Observable<Homework[]> {
     const homework: Homework[] = [
       {
@@ -201,7 +345,9 @@ export class StudentService {
     return of(homework);
   }
 
-  // Horario de clases semanal
+  /**
+   * Horario de clases semanal
+   */
   getClassSchedule(): Observable<ClassSchedule[]> {
     const schedule: ClassSchedule[] = [
       { 
@@ -257,7 +403,9 @@ export class StudentService {
     return of(schedule);
   }
 
-  // Próximos exámenes
+  /**
+   * Próximos exámenes
+   */
   getUpcomingExams(): Observable<any[]> {
     const exams = [
       {
@@ -289,7 +437,9 @@ export class StudentService {
     return of(exams);
   }
 
-  // Recursos de biblioteca disponibles
+  /**
+   * Recursos de biblioteca disponibles
+   */
   getLibraryResources(): Observable<any[]> {
     const resources = [
       {
@@ -325,7 +475,9 @@ export class StudentService {
     return of(resources);
   }
 
-  // Calcular promedio por período
+  /**
+   * Calcular promedio por período
+   */
   getAverageByPeriod(period: string): Observable<number> {
     return new Observable(observer => {
       this.getStudentGrades().subscribe(grades => {
@@ -337,7 +489,9 @@ export class StudentService {
     });
   }
 
-  // Obtener tareas por estado
+  /**
+   * Obtener tareas por estado
+   */
   getHomeworkByStatus(status: 'pending' | 'in_progress' | 'completed' | 'overdue'): Observable<Homework[]> {
     return new Observable(observer => {
       this.getAllHomework().subscribe(homework => {
@@ -348,10 +502,11 @@ export class StudentService {
     });
   }
 
-  // Marcar tarea como completada
+  /**
+   * Marcar tarea como completada
+   */
   markHomeworkAsCompleted(homeworkId: string): Observable<boolean> {
     return new Observable(observer => {
-      // Aquí harías la llamada a tu API real
       console.log(`Marking homework ${homeworkId} as completed`);
       observer.next(true);
       observer.complete();

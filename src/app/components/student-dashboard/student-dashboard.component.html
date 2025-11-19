@@ -1,71 +1,91 @@
-<div class="student-dashboard">
-  <!-- Header Bar -->
+<div class="container student-dashboard enter-anim" [class.panel-open]="!rightPanelOculto">
+  <!-- Header -->
   <div class="header-bar">
     <div class="logo-wrapper">
-      <img src="assets/Img/logo.plat.png" alt="Logo Plataforma" 
-            id="animated-logo" #animatedLogo>
+      <img src="/assets/Img/logo.plat.png" alt="Logo Plataforma" id="animated-logo" #animatedLogo>
       <canvas id="logo-bursts" #logoBursts></canvas>
     </div>
   </div>
 
-  <!-- Menu Button -->
-  <button class="menu-button" 
-          [class.active]="isMenuVisible"
-          (click)="toggleMenu()" 
-          aria-label="Menu" 
-          title="Perfil">
-    <i class="fas" [class.fa-user]="!isMenuVisible" [class.fa-times]="isMenuVisible"></i>
+  <button type="button" class="menu-button"
+          aria-label="Perfil"
+          title="Perfil"
+          [class.active]="!rightPanelOculto"
+          (click)="toggleMenu()">
+    <i class="fas" [class.fa-user]="rightPanelOculto" [class.fa-times]="!rightPanelOculto"></i>
   </button>
 
-  <div class="container">
-    <!-- Left Panel - Main Content -->
-    <div class="left-panel">
-      <div class="icons-container">
-        <div class="icon-box" 
-             *ngFor="let option of menuOptions"
-            (click)="navigateToOption(option.route)">
-          <img [src]="option.icon" [alt]="option.title">
-          <span [innerHTML]="option.title"></span>
+  <div class="left-panel">
+    <div class="icons-container">
+      <button type="button" class="icon-box ripple"
+              *ngFor="let item of menuItems"
+              (click)="go(item.route)"
+              (mousedown)="ripple($event)"
+              (touchstart)="ripple($event)">
+  <img [src]="item.icon" [attr.alt]="stripHtml(item.title)">
+        <span [innerHTML]="item.title"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="right-panel" [class.oculto]="rightPanelOculto" [attr.aria-hidden]="rightPanelOculto">
+    <div class="logo-container">
+      <img alt="Institution logo" src="/assets/Img/logoRPS.png"/>
+      <div class="logo-text">
+        <p>Institución Educativa Pública</p>
+        <p>{{ schoolName }}</p>
+      </div>
+    </div>
+
+    <!-- Foto o inicial (OVAL) -->
+    <ng-container *ngIf="user.photo; else noPhoto">
+      <div class="profile-oval photo">
+        <img [src]="user.photo" alt="Foto de perfil">
+      </div>
+    </ng-container>
+    <ng-template #noPhoto>
+      <div class="profile-oval initial">
+        {{ user.name?.charAt(0) || 'U' }}
+      </div>
+    </ng-template>
+
+    <!-- Datos -->
+    <div class="profile-info">
+      <p class="name">{{ user.name }}</p>
+
+      <div class="facts">
+        <div class="fact">
+          <i class="fas fa-envelope"></i>
+          <span>Email</span>
+          <strong class="truncate" [title]="user.email">{{ user.email }}</strong>
+        </div>
+        <div class="fact">
+          <i class="fas fa-user-graduate"></i>
+          <span>Rol</span>
+          <strong>Estudiante</strong>
+        </div>
+        <div class="fact">
+          <i class="fas fa-layer-group"></i>
+          <span>Grado</span>
+          <strong>{{ user.grade || '—' }}</strong>
         </div>
       </div>
     </div>
 
-    <!-- Right Panel - Profile -->
-    <div class="right-panel" [class.oculto]="!isMenuVisible">
-      <!-- Logo and text top left inside right panel -->
-      <div class="logo-container">
-        <img alt="Institution logo" src="assets/Img/logoRPS.png"/>
-        <div class="logo-text">
-          <p>Institución Educativa Pública</p>
-          <p>Ricardo Palma Soriano</p>
-        </div>
-      </div>
-
-      <!-- Profile circle -->
-      <div class="profile-circle">
-      <div class="profile-initial">
-          {{ studentInfo.name.charAt(0) }}
-        </div>
-      </div>
-
-      <!-- Name and role -->
-      <div class="profile-info">
-        <p>{{ studentInfo.role }}</p>
-        <p>
-          {{ studentInfo.name }}<br/>
-          {{ studentInfo.grade }}
-        </p>
-      </div>
-
-      <!-- Buttons and links -->
-      <div class="action-buttons">
-        <button class="logout-button" (click)="logout()">
-          CERRAR SESION
-        </button>
-        <a class="change-password" (click)="changePassword()">
-          Cambiar contraseña
-        </a>
-      </div>
+    <!-- Acciones (sticky y visibles) -->
+    <div class="action-buttons">
+  <a class="change-password" (click)="changePassword()">Cambiar contraseña</a>
+  <button type="button" class="logout-button" (click)="logout()">CERRAR SESIÓN</button>
     </div>
+  </div>
+
+  <!-- Toast de bienvenida -->
+  <div class="toast" [class.show]="showToast">
+    <i class="fas fa-hand-peace"></i>
+    <div>
+      <div class="toast-title">¡Bienvenido(a)!</div>
+      <div class="toast-msg">{{ shortName }}</div>
+    </div>
+  <button type="button" class="toast-close" (click)="showToast=false" aria-label="Cerrar">×</button>
   </div>
 </div>

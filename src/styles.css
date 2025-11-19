@@ -1,16 +1,85 @@
-
-/* Reset global */
-* {
+/* (igual que tienes) */
+html, body { 
+  height: 100%;
   margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
+.container {
+  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ⬇️ Añadimos uso de variables para que TODO herede colores del tema */
 body {
   font-family: 'Georgia', serif;
   overflow-x: hidden;
+  background: var(--bg);
+  color: var(--text);
 }
 
-html, body {
-  height: 100%;
+html, body { height: 100%; }
+
+/* Variables base (igual) */
+:root {
+  /* color semilla (se sobreescribe con primario) */
+  --primary: #0f7a12;
+  --primary-600: #0f7a12;
+  --text: #111827;
+  --muted: #6b7280;
+  --bg: #edf1f4;
+  --card: #ffffff;
+  --card-border: #e5e7eb;
 }
+
+/* ⬇️ Cambiamos .theme-dark -> :root.theme-dark para aplicarlo en <html> */
+:root.theme-dark {
+  --text: #e5e7eb;
+  --muted: #a6adb7;
+  --bg: #0f1216;
+  --card: #141a20;
+  --card-border: #26303b;
+}
+
+/* Accesibilidad: menos movimiento */
+.reduce-motion * {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Paletas (opcional, pero recomendado usar :root. prefijo) */
+:root.primary-green  { --primary: #0f7a12; --primary-600:#0f7a12; }
+:root.primary-blue   { --primary: #1d4ed8; --primary-600:#1e40af; }
+:root.primary-violet { --primary: #7c3aed; --primary-600:#6d28d9; }
+:root.primary-cyan   { --primary: #0891b2; --primary-600:#0e7490; }
+:root.primary-amber  { --primary: #b45309; --primary-600:#92400e; }
+
+/* Helpers (idénticos a los tuyos) */
+.text-muted{ color: var(--muted); }
+.bg-app{ background: var(--bg); }
+.card{
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+}
+.btn-primary{
+  background: var(--primary);
+  color: #fff;
+  border: 0;
+  border-radius: 10px;
+  padding: .65rem 1rem;
+}
+.switch{
+  position: relative; width: 44px; height: 24px; border-radius: 999px;
+  background: #cbd5e1; border: 1px solid #cbd5e1; cursor: pointer; transition: .15s;
+}
+.switch.on{ background: var(--primary); border-color: var(--primary); }
+.switch > i{
+  position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%;
+  background: #fff; transition: transform .15s ease;
+}
+.switch.on > i{ transform: translateX(20px); }

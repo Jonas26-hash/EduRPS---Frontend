@@ -1,0 +1,10 @@
+import { Component } from '@angular/core';
+import { MatriculaFormComponent } from '../../components/matricula-form/matricula-form.component';
+
+@Component({
+  selector: 'app-matricula-form-page',
+  standalone: true,
+  imports: [MatriculaFormComponent],
+  template: `<app-matricula-form></app-matricula-form>`
+})
+export class MatriculaFormPage {}

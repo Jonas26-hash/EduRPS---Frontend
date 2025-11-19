@@ -1,0 +1,61 @@
+<div class="overlay" *ngIf="open" (click)="close.emit()"></div>
+
+<div class="modal card" *ngIf="open">
+  <header class="head">
+    <h3>¿Necesitas ayuda?</h3>
+    <button class="icon" (click)="close.emit()" aria-label="Cerrar">
+      <i class="fa fa-times"></i>
+    </button>
+  </header>
+
+  <section class="body">
+    <div class="row">
+      <label>Categoría</label>
+      <div class="cats">
+        <button type="button" [class.on]="category==='Acceso'" (click)="category='Acceso'">🔐 Acceso</button>
+        <button type="button" [class.on]="category==='Cursos'" (click)="category='Cursos'">📚 Cursos</button>
+        <button type="button" [class.on]="category==='Calificaciones'" (click)="category='Calificaciones'">📝 Calificaciones</button>
+        <button type="button" [class.on]="category==='Otro'" (click)="category='Otro'">💬 Otro</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <label>Prioridad</label>
+      <div class="seg">
+        <button [class.on]="priority==='Normal'" (click)="priority='Normal'">Normal</button>
+        <button [class.on]="priority==='Alta'" (click)="priority='Alta'">Alta</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <label>Describe el problema</label>
+      <textarea [(ngModel)]="message" rows="5" maxlength="800" placeholder="Cuéntanos qué ocurre..."></textarea>
+      <div class="muted">{{message.length}} / 800</div>
+    </div>
+
+    <div class="row two">
+      <div>
+        <label>Canal</label>
+        <div class="seg">
+          <button [class.on]="channel==='whatsapp'" (click)="channel='whatsapp'">WhatsApp</button>
+          <button [class.on]="channel==='email'" (click)="channel='email'">Email</button>
+        </div>
+      </div>
+      <div>
+        <label>Tu contacto (opcional)</label>
+        <input [(ngModel)]="contact" type="text" placeholder="Celular o correo" />
+      </div>
+    </div>
+
+    <div class="note">
+      Se incluirá información técnica básica (navegador, plataforma y hora) para acelerar el soporte.
+    </div>
+  </section>
+
+  <footer class="foot">
+    <button class="btn ghost" (click)="close.emit()">Cancelar</button>
+    <button class="btn primary" [disabled]="disabled || sending" (click)="send()">
+      {{ sending ? 'Enviando...' : 'Enviar a soporte' }}
+    </button>
+  </footer>
+</div>
